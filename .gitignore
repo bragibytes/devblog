@@ -13,3 +13,8 @@ dist/
 .env
 .env.*
 !.env.example
+
+# Grok / AI collaboration scratch space (never commit)
+.todo.txt
+.assets/
+.patch_notes.txt

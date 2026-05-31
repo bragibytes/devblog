@@ -18,7 +18,7 @@ const sortedPosts = allPosts.sort(
 const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags))].sort();
 ---
 
-<BaseLayout title={`Writing — ${site.name}`} description="All posts by Sam Bragge">
+<BaseLayout title={`Writing — ${site.name}`} description="All posts by Sam Bragi">
   <Header />
 
   <main class="mx-auto max-w-5xl px-6 pt-12 pb-20">

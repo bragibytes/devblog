@@ -9,7 +9,7 @@ export const site = {
     "Notes on building real software by directing AI models, agents, and tools. The shift from writing every line to orchestrating intelligence.",
   url: "https://bragibytes.com",
   author: {
-    name: "Sam Bragge",
+    name: "Sam Bragi",
     email: "rustycoder42@gmail.com",
     github: "bragibytes",
   },

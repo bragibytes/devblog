@@ -105,31 +105,45 @@ All identity and branding lives in one place:
 
 Change the site name, description, social links, URL, accent colors (via CSS variables in `global.css`), etc.
 
+## Pre-Deployment Checklist (Do These First)
+
+Before deploying, complete these items:
+
+### 1. Newsletter (Buttondown) – Required for the signup form to work
+
+1. Create a free account at [buttondown.email](https://buttondown.email)
+2. Copy your Buttondown **username** (visible in your dashboard URL)
+3. Open `src/config.ts`
+4. Replace the placeholder:
+   ```ts
+   newsletter: {
+     buttondown: "your-username",   // ← change this
+   },
+   ```
+5. Commit + push the change.
+
+### 2. Vercel Account
+
+- Create a free account at [vercel.com](https://vercel.com) if you don’t have one yet.
+- Connect your GitHub account.
+
 ## Deployment
 
 ### Vercel (recommended)
 
-1. Push your code to GitHub (under the `bragibytes` account).
-2. Go to [vercel.com](https://vercel.com) → New Project → Import your GitHub repo.
-3. Vercel will auto-detect Astro. Just click Deploy.
+1. Make sure your latest code is pushed to GitHub (`bragibytes/devblog`).
+2. Go to [vercel.com](https://vercel.com) → **New Project** → Import the `bragibytes/devblog` repo.
+3. Vercel should auto-detect it as an Astro project. Click Deploy.
 
-After the first deploy, update `src/config.ts`:
-- Set `url` to your actual Vercel URL (e.g. `https://bragibytes.vercel.app`)
-- Update `newsletter.buttondown` with your real Buttondown username, then redeploy.
+After the first successful deploy:
+- (Optional) Update `url` in `src/config.ts` to your Vercel URL if you want.
+- Later, when you’re ready, add your custom domain `bragibytes.com` in Vercel settings.
 
-You can also deploy from CLI:
+You can also deploy from the CLI:
 ```bash
 npm i -g vercel
 vercel
 ```
-
-### Newsletter Setup (Buttondown)
-
-1. Create a free account at [buttondown.email](https://buttondown.email)
-2. In `src/config.ts`, set `newsletter.buttondown` to your username.
-3. Redeploy.
-
-The form will then actually work and collect subscribers.
 
 ## Scripts
 

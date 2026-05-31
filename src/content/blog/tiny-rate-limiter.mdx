@@ -1,0 +1,49 @@
+---
+title: "I Had an AI Build a Rate Limiter. Here's What Actually Happened."
+description: "What it looks like when you try to ship a small but real feature by directing an AI instead of writing the code yourself."
+pubDate: 2026-05-30
+updatedDate: 2026-05-31
+tags: ["ai", "workflow", "production"]
+draft: false
+---
+
+I gave an AI the following prompt:
+
+> "Build a clean, production-ready rate limiter in TypeScript with both token bucket and sliding window implementations. Include usage examples and tests."
+
+What followed was a very revealing process.
+
+## The good parts
+
+- It produced working code extremely quickly.
+- The structure and naming were better than what I would have written at 2am.
+- It forced me to think about the interface and error cases earlier than I normally would.
+
+## The bad parts
+
+- It confidently invented an API that looked reasonable but had subtle correctness issues.
+- The tests were green but shallow.
+- It had no opinion on observability or production concerns (headers, metrics, backpressure).
+
+The code was *plausible*. It was not *correct under load*.
+
+## What I actually did
+
+I didn't accept the first output. Instead I treated the model like a very fast but overconfident junior engineer:
+
+1. Asked it to explain its design decisions.
+2. Pushed back on specific implementation choices.
+3. Made it write property-based tests.
+4. Forced it to consider distributed systems failure modes.
+
+The final result was much better — but I still had to do real engineering work.
+
+## The real skill
+
+This is the part nobody wants to talk about:
+
+The value wasn't in the prompting. The value was in knowing when the output was good enough and when it was dangerously mediocre.
+
+That skill is currently underrated and will become extremely valuable.
+
+More posts on this exact dynamic coming.

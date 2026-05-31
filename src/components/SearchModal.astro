@@ -1,0 +1,158 @@
+---
+// This component is a client island that provides Cmd+K search powered by Pagefind
+---
+
+<div id="search-modal" class="hidden fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm" aria-hidden="true">
+  <div class="mx-auto mt-[10vh] max-w-xl px-4">
+    <div class="rounded-3xl border border-[var(--border)] bg-[var(--bg)] shadow-2xl overflow-hidden">
+      <!-- Search input -->
+      <div class="flex items-center gap-3 border-b border-[var(--border)] px-5 py-4">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[var(--text-muted)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.25">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+        </svg>
+        <input
+          id="search-input-modal"
+          type="text"
+          placeholder="Search posts..."
+          class="flex-1 bg-transparent text-lg placeholder:text-[var(--text-muted)] focus:outline-none"
+          autocomplete="off"
+        />
+        <button id="search-close" class="rounded-lg px-2 py-1 text-xs text-[var(--text-muted)] hover:bg-[var(--bg-elevated)]">ESC</button>
+      </div>
+
+      <!-- Results -->
+      <div id="search-results" class="max-h-[60vh] overflow-y-auto p-2 text-sm">
+        <div class="px-3 py-8 text-center text-[var(--text-muted)] text-sm">
+          Start typing to search the archive...
+        </div>
+      </div>
+
+      <div class="border-t border-[var(--border)] bg-[var(--bg-elevated)] px-4 py-2 text-[10px] text-[var(--text-muted)] flex items-center justify-between">
+        <div>Powered by Pagefind</div>
+        <div class="hidden sm:block">↑↓ to navigate · ⏎ to open</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  let pagefind: any = null;
+  let isOpen = false;
+
+  const modal = document.getElementById('search-modal') as HTMLDivElement;
+  const input = document.getElementById('search-input-modal') as HTMLInputElement;
+  const resultsEl = document.getElementById('search-results') as HTMLDivElement;
+  const closeBtn = document.getElementById('search-close');
+
+  async function loadPagefind() {
+    if (pagefind) return pagefind;
+
+    // Load Pagefind at runtime only (avoids build-time resolution issues)
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = '/pagefind/pagefind.js';
+      script.onload = async () => {
+        // @ts-ignore - loaded via script tag above
+        pagefind = window.pagefind;
+        if (pagefind && typeof pagefind.init === 'function') {
+          await pagefind.init();
+          resolve(pagefind);
+        } else {
+          reject(new Error('Pagefind not available on window after script load'));
+        }
+      };
+      script.onerror = () => reject(new Error('Failed to load Pagefind'));
+      document.head.appendChild(script);
+    });
+  }
+
+  function openModal() {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    modal.setAttribute('aria-hidden', 'false');
+    setTimeout(() => input.focus(), 10);
+    isOpen = true;
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeModal() {
+    modal.classList.add('hidden');
+    modal.classList.remove('flex');
+    modal.setAttribute('aria-hidden', 'true');
+    input.value = '';
+    resultsEl.innerHTML = '<div class="px-3 py-8 text-center text-[var(--text-muted)] text-sm">Start typing to search the archive...</div>';
+    isOpen = false;
+    document.body.style.overflow = '';
+  }
+
+  async function performSearch(query: string) {
+    if (!query.trim()) {
+      resultsEl.innerHTML = '<div class="px-3 py-8 text-center text-[var(--text-muted)] text-sm">Start typing to search the archive...</div>';
+      return;
+    }
+
+    const pf = await loadPagefind();
+    const search = await pf.search(query, { limit: 12 });
+
+    if (!search.results.length) {
+      resultsEl.innerHTML = `<div class="px-4 py-6 text-[var(--text-muted)]">No results for “${query}”</div>`;
+      return;
+    }
+
+    const html = await Promise.all(
+      search.results.map(async (r: any) => {
+        const data = await r.data();
+        return `
+          <a href="${data.url}" class="block rounded-2xl px-4 py-3 hover:bg-[var(--bg-elevated)] transition group">
+            <div class="font-medium text-base text-[var(--text)] group-hover:text-[var(--accent)] transition">${data.meta?.title || 'Untitled'}</div>
+            <div class="text-sm text-[var(--text-muted)] line-clamp-2 mt-0.5">${data.excerpt || data.meta?.description || ''}</div>
+            ${data.meta?.tags ? `<div class="mt-1.5 flex gap-1.5">${data.meta.tags.split(',').map((t: string) => `<span class="tag text-[10px]">${t.trim()}</span>`).join('')}</div>` : ''}
+          </a>
+        `;
+      })
+    );
+
+    resultsEl.innerHTML = html.join('');
+  }
+
+  // Wire up input
+  let debounce: number;
+  input?.addEventListener('input', (e) => {
+    clearTimeout(debounce);
+    debounce = window.setTimeout(() => {
+      performSearch((e.target as HTMLInputElement).value);
+    }, 120);
+  });
+
+  // Close handlers
+  closeBtn?.addEventListener('click', closeModal);
+  modal?.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isOpen) {
+      closeModal();
+    }
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      if (isOpen) {
+        closeModal();
+      } else {
+        openModal();
+      }
+    }
+  });
+
+  // Expose trigger for the header button
+  (window as any).__openSearch = openModal;
+
+  // Also attach to any element with id="search-trigger"
+  document.getElementById('search-trigger')?.addEventListener('click', openModal);
+</script>
+
+<style>
+  #search-modal.flex {
+    display: flex;
+  }
+</style>

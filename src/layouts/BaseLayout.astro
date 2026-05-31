@@ -1,0 +1,87 @@
+---
+import { site } from '@/config';
+import '@/styles/global.css';
+import SearchModal from '@/components/SearchModal.astro';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  type?: 'website' | 'article';
+  publishedTime?: string;
+  tags?: string[];
+}
+
+const {
+  title = site.title,
+  description = site.description,
+  image = site.defaultOgImage,
+  type = 'website',
+  publishedTime,
+  tags = [],
+} = Astro.props;
+
+const canonicalURL = new URL(Astro.url.pathname, site.url).href;
+const fullImageURL = image.startsWith('http') ? image : new URL(image, site.url).href;
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="alternate" type="application/rss+xml" title={site.name} href="/rss.xml" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content={site.author.name} />
+    <link rel="canonical" href={canonicalURL} />
+
+    <!-- Open Graph / Twitter -->
+    <meta property="og:type" content={type} />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={fullImageURL} />
+    <meta property="og:site_name" content={site.name} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={fullImageURL} />
+    {site.author.twitter && <meta name="twitter:creator" content={site.author.twitter} />}
+
+    {publishedTime && <meta property="article:published_time" content={publishedTime} />}
+    {tags.map((tag) => <meta property="article:tag" content={tag} />)}
+
+    <!-- View Transitions for buttery page changes -->
+    <meta name="view-transition" content="same-origin" />
+
+    <!-- Preload important assets -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin />
+  </head>
+
+  <body class="bg-[var(--bg)] text-[var(--text)] antialiased selection:bg-[var(--accent)] selection:text-white">
+    <slot />
+
+    <!-- Theme initialization script (runs before paint to avoid flash) -->
+    <script is:inline>
+      (function () {
+        const stored = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = stored || (prefersDark ? 'dark' : 'light');
+
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      })();
+    </script>
+
+    <!-- Pagefind-powered search modal (loads on demand) -->
+    <SearchModal />
+  </body>
+</html>

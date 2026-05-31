@@ -1,0 +1,62 @@
+---
+title: "The Hidden Cost of AI-Generated Features"
+description: "Every time you let the model ship 'just one more thing,' you're paying a tax. Here's what that tax actually looks like in practice."
+pubDate: 2026-05-28
+tags: ["ai", "product", "workflow"]
+draft: false
+---
+
+There's a particular kind of optimism that only exists when you're working with a powerful AI coding assistant.
+
+You describe what you want, the model produces something that looks reasonable, and suddenly the voice appears:
+
+> "It would only take one more prompt to add X..."
+
+This version of the sentence is even more dangerous than the old one.
+
+## The real cost isn't development time
+
+When you add a feature, you are not just paying the cost to build it. You're signing up for:
+
+- **Maintenance tax** — Every bug report, every refactor, every time you have to understand the feature six months later at 2am.
+- **Cognitive load** — Your brain now has to hold this extra concept. So does every future contributor.
+- **Support burden** — Users will ask about it, configure it, and get confused by it.
+- **Opportunity cost** — The hours you spent on this feature are hours you didn't spend on the 3 things that actually move the needle.
+
+I have a simple heuristic now:
+
+**If I can't explain in one sentence why this feature makes the product dramatically better for the *core user*, it doesn't get built.**
+
+## The new "later" trap
+
+With AI, the dangerous phrase has mutated:
+
+> "The model can just add that later."
+
+This is even more seductive because the marginal cost feels close to zero. One more prompt. One more generation.
+
+The problem is the same as before, only worse: every extra feature still carries maintenance cost, cognitive load, and opportunity cost. The AI doesn't pay those costs. You do.
+
+The features that survive this new test are still the boring ones. The difference is that now you have to actively fight the model (and yourself) to keep scope under control.
+
+## A practical filter
+
+Before I implement anything non-trivial, I force myself to answer three questions:
+
+1. Who is this for, specifically? (Not "power users" — name an actual person or persona.)
+2. What pain does this remove that they currently feel *daily*?
+3. If I never built this, would the product still be obviously valuable?
+
+If I can't answer all three cleanly, the feature goes on the "maybe in v2" list, which is where most ideas go to die peacefully.
+
+## The beauty of ruthless subtraction
+
+The side projects I'm proudest of are the ones that feel almost *too* simple. Users often say some version of "I can't believe it took you this long to build something this obvious."
+
+That's the highest compliment.
+
+The hidden cost of features is paid in attention, clarity, and the slow erosion of the original vision. The best products I've used recently all have one thing in common:
+
+They do less than you expect — but what they do, they do with unusual care.
+
+That bar is much harder to clear than "just one more feature."

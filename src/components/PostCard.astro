@@ -1,0 +1,50 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { Icon } from 'astro-icon/components';
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+  featured?: boolean;
+}
+
+const { post, featured = false } = Astro.props;
+const { title, description, pubDate, tags } = post.data;
+
+const formattedDate = pubDate.toLocaleDateString('en-US', {
+  year: 'numeric',
+  month: 'short',
+  day: 'numeric',
+});
+
+const readingTime = Math.max(1, Math.round((post.body?.length || 0) / 900));
+---
+
+<a
+  href={`/blog/${post.id}`}
+  class:list={[
+    "post-card group block rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] p-6 md:p-7 hover:border-[var(--accent)]/30",
+    featured && "md:col-span-2"
+  ]}
+>
+  <div class="flex items-center gap-2 text-xs text-[var(--text-muted)] mb-3">
+    <time datetime={pubDate.toISOString()}>{formattedDate}</time>
+    <span aria-hidden="true">·</span>
+    <span>{readingTime} min</span>
+  </div>
+
+  <h3 class="font-semibold text-xl md:text-2xl tracking-tight mb-3 group-hover:text-[var(--accent)] transition-colors">
+    {title}
+  </h3>
+
+  <p class="text-[var(--text-muted)] line-clamp-3 text-[15px] leading-snug mb-5">
+    {description}
+  </p>
+
+  {tags.length > 0 && (
+    <div class="flex flex-wrap gap-1.5">
+      {tags.slice(0, 4).map((tag) => (
+        <span class="tag text-[10px] px-2 py-px">{tag}</span>
+      ))}
+    </div>
+  )}
+</a>

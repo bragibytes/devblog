@@ -1,0 +1,81 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import PostCard from '@/components/PostCard.astro';
+import { site } from '@/config';
+
+const allPosts = await getCollection('blog', ({ data }) => {
+  return import.meta.env.PROD ? data.draft !== true : true;
+});
+
+const sortedPosts = allPosts.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+const latestPosts = sortedPosts.slice(0, 4);
+const featuredPost = sortedPosts[0];
+---
+
+<BaseLayout>
+  <Header />
+
+  <main>
+    <!-- Hero -->
+    <section class="mx-auto max-w-4xl px-6 pt-20 pb-16 text-center">
+      <div class="inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-3 py-1 text-xs font-medium tracking-[0.5px] text-[var(--text-muted)] mb-6">
+        AI-POWERED DEVELOPMENT
+      </div>
+
+      <h1 class="text-6xl md:text-7xl font-bold tracking-tighter mb-6">
+        Sam Bragge
+      </h1>
+
+      <p class="max-w-xl mx-auto text-xl md:text-2xl text-[var(--text-muted)] leading-tight">
+        I build software by directing AI models and agents.<br />
+        Writing about what actually works.
+      </p>
+
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <a
+          href="/blog"
+          class="inline-flex items-center justify-center rounded-xl bg-[var(--text)] px-8 py-3 text-base font-medium text-[var(--bg)] transition hover:opacity-90"
+        >
+          Read the writing
+        </a>
+        <a
+          href="/about"
+          class="inline-flex items-center justify-center rounded-xl border border-[var(--border)] px-8 py-3 text-base font-medium transition hover:bg-[var(--bg-elevated)]"
+        >
+          About me
+        </a>
+      </div>
+    </section>
+
+    <!-- Latest writing -->
+    <section class="mx-auto max-w-5xl px-6 pb-20">
+      <div class="flex items-baseline justify-between mb-6">
+        <h2 class="text-sm font-semibold tracking-[1px] text-[var(--text-muted)]">LATEST WRITING</h2>
+        <a href="/blog" class="text-sm text-[var(--accent)] hover:underline">View all →</a>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {latestPosts.map((post, index) => (
+          <PostCard post={post} featured={index === 0} />
+        ))}
+      </div>
+    </section>
+
+    <!-- Short value prop / about teaser -->
+    <section class="border-t border-[var(--border)] bg-[var(--bg-elevated)] py-12">
+      <div class="mx-auto max-w-2xl px-6 text-center">
+        <p class="text-[var(--text-muted)] text-lg">
+          Notes on building real software by directing AI. The workflows, failures, and leverage that actually matter.
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>

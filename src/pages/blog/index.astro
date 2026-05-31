@@ -1,0 +1,95 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import PostCard from '@/components/PostCard.astro';
+import { site } from '@/config';
+
+const allPosts = await getCollection('blog', ({ data }) => {
+  return import.meta.env.PROD ? data.draft !== true : true;
+});
+
+const sortedPosts = allPosts.sort(
+  (a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf()
+);
+
+// Collect all unique tags for the filter UI
+const allTags = [...new Set(sortedPosts.flatMap((p) => p.data.tags))].sort();
+---
+
+<BaseLayout title={`Writing — ${site.name}`} description="All posts by Sam Bragge">
+  <Header />
+
+  <main class="mx-auto max-w-5xl px-6 pt-12 pb-20">
+    <div class="mb-10">
+      <h1 class="text-5xl font-bold tracking-tighter mb-3">Writing</h1>
+      <p class="text-xl text-[var(--text-muted)]">
+        {sortedPosts.length} posts about building software, shipping things, and thinking in public.
+      </p>
+    </div>
+
+    <!-- Search bar (enhanced later by Pagefind) -->
+    <div class="mb-8 relative">
+      <input
+        id="search-input"
+        type="text"
+        placeholder="Search posts... (or press ⌘K)"
+        class="w-full rounded-2xl border border-[var(--border)] bg-[var(--bg-elevated)] px-5 py-3.5 text-base placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--accent)]"
+      />
+      <div class="absolute right-5 top-4 text-xs text-[var(--text-muted)] pointer-events-none hidden sm:block">
+        ⌘K
+      </div>
+    </div>
+
+    <!-- Tags -->
+    {allTags.length > 0 && (
+      <div class="flex flex-wrap gap-2 mb-10">
+        <a href="/blog" class="tag bg-[var(--text)] text-[var(--bg)] border-[var(--text)]">All</a>
+        {allTags.map((tag) => (
+          <a href={`/tags/${tag}`} class="tag">{tag}</a>
+        ))}
+      </div>
+    )}
+
+    <!-- Post grid -->
+    <div id="posts-grid" class="grid grid-cols-1 md:grid-cols-2 gap-5">
+      {sortedPosts.map((post) => (
+        <PostCard post={post} />
+      ))}
+    </div>
+
+    {sortedPosts.length === 0 && (
+      <p class="text-center py-12 text-[var(--text-muted)]">No posts yet. Check back soon.</p>
+    )}
+  </main>
+
+  <Footer />
+
+  <script>
+    // Simple client-side filter for now (Pagefind will replace/enhance this)
+    const searchInput = document.getElementById('search-input') as HTMLInputElement;
+    const grid = document.getElementById('posts-grid');
+
+    if (searchInput && grid) {
+      searchInput.addEventListener('input', (e) => {
+        const term = (e.target as HTMLInputElement).value.toLowerCase().trim();
+        const cards = grid.querySelectorAll('a');
+
+        cards.forEach((card) => {
+          const text = card.textContent?.toLowerCase() || '';
+          (card as HTMLElement).style.display = text.includes(term) ? '' : 'none';
+        });
+      });
+    }
+
+    // Cmd/Ctrl + K focuses search
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        searchInput?.focus();
+        searchInput?.select();
+      }
+    });
+  </script>
+</BaseLayout>

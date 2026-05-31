@@ -1,0 +1,315 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+---
+
+<BaseLayout
+  title="Arcade — Bragibytes"
+  description="Fun games you can build with web technologies. Starting with classic Pong."
+>
+  <Header />
+
+  <main class="mx-auto max-w-4xl px-6 py-12">
+    <div class="text-center mb-10">
+      <h1 class="text-5xl font-bold tracking-tighter mb-4">Arcade</h1>
+      <p class="text-xl text-[var(--text-muted)] max-w-2xl mx-auto">
+        A collection of fun, playable games built with web technologies.
+        Proof that you don't need a game engine to make something enjoyable.
+      </p>
+    </div>
+
+    <!-- Pong -->
+    <section class="mb-16">
+      <div class="flex items-center justify-between mb-6">
+        <div>
+          <h2 class="text-3xl font-bold tracking-tight">Pong</h2>
+          <p class="text-[var(--text-muted)]">The classic. Built with HTML5 Canvas + vanilla JavaScript.</p>
+        </div>
+        <div class="text-right text-sm text-[var(--text-muted)]">
+          <div>Player vs Computer</div>
+          <div class="text-xs">Mouse or ↑ ↓ keys</div>
+        </div>
+      </div>
+
+      <div class="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-2xl p-6">
+        <div class="flex justify-center mb-4">
+          <canvas 
+            id="pong-canvas" 
+            width="640" 
+            height="400" 
+            class="border border-[var(--border)] rounded-lg bg-black cursor-crosshair"
+          ></canvas>
+        </div>
+
+        <div class="flex flex-wrap gap-3 justify-center text-sm">
+          <button id="start-btn" 
+                  class="px-6 py-2 bg-[var(--accent)] text-black rounded-lg font-medium hover:bg-[var(--accent-hover)] transition">
+            Start Game
+          </button>
+          <button id="pause-btn" 
+                  class="px-6 py-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg)] transition disabled:opacity-50"
+                  disabled>
+            Pause
+          </button>
+          <button id="reset-btn" 
+                  class="px-6 py-2 border border-[var(--border)] rounded-lg hover:bg-[var(--bg)] transition">
+            Reset
+          </button>
+        </div>
+
+        <div class="mt-6 text-center text-xs text-[var(--text-muted)] max-w-md mx-auto">
+          Move your paddle with the mouse or arrow keys. First to 11 wins.
+          The AI gets slightly better as the game goes on.
+        </div>
+      </div>
+    </section>
+
+    <div class="text-center text-sm text-[var(--text-muted)]">
+      More games coming soon. Want to suggest one or see how this was built?
+      <a href="https://github.com/bragibytes/devblog" class="underline hover:text-[var(--text)]">Check the source</a>.
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<script>
+  // Classic Pong implementation
+  const canvas = document.getElementById('pong-canvas');
+  const ctx = canvas.getContext('2d');
+
+  const startBtn = document.getElementById('start-btn');
+  const pauseBtn = document.getElementById('pause-btn');
+  const resetBtn = document.getElementById('reset-btn');
+
+  const PADDLE_WIDTH = 10;
+  const PADDLE_HEIGHT = 80;
+  const BALL_SIZE = 8;
+  const WIN_SCORE = 11;
+
+  let gameState = {
+    running: false,
+    paused: false,
+    playerScore: 0,
+    aiScore: 0,
+  };
+
+  let ball = { x: canvas.width / 2, y: canvas.height / 2, vx: 4, vy: 3 };
+  let player = { y: canvas.height / 2 - PADDLE_HEIGHT / 2 };
+  let ai = { y: canvas.height / 2 - PADDLE_HEIGHT / 2 };
+
+  let mouseY = canvas.height / 2;
+
+  function resetBall() {
+    ball.x = canvas.width / 2;
+    ball.y = canvas.height / 2;
+    ball.vx = (Math.random() > 0.5 ? 1 : -1) * (3 + Math.random() * 2);
+    ball.vy = (Math.random() * 4 - 2);
+  }
+
+  function update() {
+    if (!gameState.running || gameState.paused) return;
+
+    // Player paddle follows mouse (with smoothing)
+    const targetY = mouseY - PADDLE_HEIGHT / 2;
+    player.y += (targetY - player.y) * 0.2;
+    player.y = Math.max(0, Math.min(canvas.height - PADDLE_HEIGHT, player.y));
+
+    // Simple AI
+    const aiCenter = ai.y + PADDLE_HEIGHT / 2;
+    const aiSpeed = 3.5 + (gameState.playerScore + gameState.aiScore) * 0.08;
+    if (ball.y < aiCenter - 10) ai.y -= aiSpeed;
+    else if (ball.y > aiCenter + 10) ai.y += aiSpeed;
+    ai.y = Math.max(0, Math.min(canvas.height - PADDLE_HEIGHT, ai.y));
+
+    // Move ball
+    ball.x += ball.vx;
+    ball.y += ball.vy;
+
+    // Wall bounce
+    if (ball.y <= 0 || ball.y >= canvas.height) {
+      ball.vy = -ball.vy;
+      playBeep(220, 0.05);
+    }
+
+    // Paddle collision - Player
+    if (
+      ball.x <= PADDLE_WIDTH &&
+      ball.y >= player.y &&
+      ball.y <= player.y + PADDLE_HEIGHT
+    ) {
+      ball.vx = Math.abs(ball.vx) * 1.05;
+      ball.vy += (ball.y - (player.y + PADDLE_HEIGHT / 2)) * 0.15;
+      playBeep(440, 0.06);
+    }
+
+    // Paddle collision - AI
+    if (
+      ball.x >= canvas.width - PADDLE_WIDTH - BALL_SIZE &&
+      ball.y >= ai.y &&
+      ball.y <= ai.y + PADDLE_HEIGHT
+    ) {
+      ball.vx = -Math.abs(ball.vx) * 1.05;
+      ball.vy += (ball.y - (ai.y + PADDLE_HEIGHT / 2)) * 0.15;
+      playBeep(440, 0.06);
+    }
+
+    // Scoring
+    if (ball.x < 0) {
+      gameState.aiScore++;
+      playBeep(150, 0.2);
+      resetBall();
+      checkWin();
+    }
+
+    if (ball.x > canvas.width) {
+      gameState.playerScore++;
+      playBeep(660, 0.2);
+      resetBall();
+      checkWin();
+    }
+  }
+
+  function checkWin() {
+    if (gameState.playerScore >= WIN_SCORE || gameState.aiScore >= WIN_SCORE) {
+      gameState.running = false;
+      pauseBtn.disabled = true;
+      startBtn.textContent = 'Play Again';
+    }
+  }
+
+  let audioContext;
+  function playBeep(frequency, duration) {
+    if (!audioContext) audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    const osc = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+    osc.type = 'square';
+    osc.frequency.value = frequency;
+    gain.gain.value = 0.3;
+
+    const filter = audioContext.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.value = 800;
+
+    osc.connect(filter);
+    filter.connect(gain);
+    gain.connect(audioContext.destination);
+
+    osc.start();
+    setTimeout(() => {
+      gain.gain.linearRampToValueAtTime(0.001, audioContext.currentTime + 0.1);
+      setTimeout(() => osc.stop(), 150);
+    }, duration * 1000);
+  }
+
+  function draw() {
+    ctx.fillStyle = '#0a0a0a';
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Center line
+    ctx.strokeStyle = '#1f2937';
+    ctx.lineWidth = 4;
+    ctx.setLineDash([10, 15]);
+    ctx.beginPath();
+    ctx.moveTo(canvas.width / 2, 0);
+    ctx.lineTo(canvas.width / 2, canvas.height);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Paddles
+    ctx.fillStyle = '#34d399';
+    ctx.fillRect(0, player.y, PADDLE_WIDTH, PADDLE_HEIGHT);
+    ctx.fillRect(canvas.width - PADDLE_WIDTH, ai.y, PADDLE_WIDTH, PADDLE_HEIGHT);
+
+    // Ball
+    ctx.fillRect(ball.x, ball.y, BALL_SIZE, BALL_SIZE);
+
+    // Score
+    ctx.fillStyle = '#e2e8f0';
+    ctx.font = 'bold 48px monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(gameState.playerScore, canvas.width / 4, 70);
+    ctx.fillText(gameState.aiScore, (canvas.width / 4) * 3, 70);
+  }
+
+  function gameLoop() {
+    update();
+    draw();
+    if (gameState.running && !gameState.paused) {
+      requestAnimationFrame(gameLoop);
+    }
+  }
+
+  function startGame() {
+    if (!gameState.running) {
+      gameState.running = true;
+      gameState.paused = false;
+      if (gameState.playerScore >= WIN_SCORE || gameState.aiScore >= WIN_SCORE) {
+        gameState.playerScore = 0;
+        gameState.aiScore = 0;
+        resetBall();
+      }
+      startBtn.textContent = 'Resume';
+      pauseBtn.disabled = false;
+      gameLoop();
+    } else {
+      gameState.paused = false;
+      pauseBtn.textContent = 'Pause';
+      gameLoop();
+    }
+  }
+
+  function togglePause() {
+    if (!gameState.running) return;
+    gameState.paused = !gameState.paused;
+    pauseBtn.textContent = gameState.paused ? 'Resume' : 'Pause';
+    if (!gameState.paused) gameLoop();
+  }
+
+  function resetGame() {
+    gameState.running = false;
+    gameState.paused = false;
+    gameState.playerScore = 0;
+    gameState.aiScore = 0;
+    resetBall();
+    player.y = canvas.height / 2 - PADDLE_HEIGHT / 2;
+    ai.y = canvas.height / 2 - PADDLE_HEIGHT / 2;
+    startBtn.textContent = 'Start Game';
+    pauseBtn.textContent = 'Pause';
+    pauseBtn.disabled = true;
+    draw();
+  }
+
+  // Controls
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mouseY = e.clientY - rect.top;
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowUp') mouseY -= 30;
+    if (e.key === 'ArrowDown') mouseY += 30;
+    if ((e.key === ' ' || e.key === 'Enter') && gameState.running) {
+      e.preventDefault();
+      togglePause();
+    }
+    if (e.key.toLowerCase() === 'r') {
+      resetGame();
+    }
+  });
+
+  // Buttons
+  startBtn.addEventListener('click', startGame);
+  pauseBtn.addEventListener('click', togglePause);
+  resetBtn.addEventListener('click', resetGame);
+
+  // Initial draw
+  resetBall();
+  draw();
+
+  // Easter egg: click canvas to start
+  canvas.addEventListener('click', () => {
+    if (!gameState.running) startGame();
+  });
+</script>

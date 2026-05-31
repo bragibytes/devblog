@@ -129,27 +129,43 @@ Before deploying, complete these items:
 
 ## Deployment
 
-### Vercel (recommended)
+Because this project uses **git worktrees** heavily (common with long Grok sessions), there are two good ways to deploy:
 
-1. Make sure your latest code is pushed to GitHub (`bragibytes/devblog`).
-2. Go to [vercel.com](https://vercel.com) → **New Project** → Import the `bragibytes/devblog` repo.
-3. Vercel should auto-detect it as an Astro project. Click Deploy.
+### 1. Fastest from any worktree (recommended for day-to-day)
+
+```bash
+npm run deploy
+```
+
+This uses the Vercel CLI to deploy the current directory directly to production. It does **not** require committing or pushing. Great when you're in an isolated worktree.
+
+First time only:
+```bash
+npm i -g vercel
+vercel login
+```
+
+### 2. Traditional git flow (permanent history)
+
+```bash
+npm run deploy:git
+```
+
+This commits your changes, pushes to GitHub `main`, and lets Vercel deploy via the GitHub integration (the normal way).
 
 After the first successful deploy:
 - (Optional) Update `url` in `src/config.ts` to your Vercel URL if you want.
 - Later, when you’re ready, add your custom domain `bragibytes.com` in Vercel settings.
 
-You can also deploy from the CLI:
-```bash
-npm i -g vercel
-vercel
-```
-
 ## Scripts
 
-- `npm run dev` — Local development with hot reload
-- `npm run build` — Production build + Pagefind indexing
-- `npm run preview` — Preview the production build locally
+| Command            | Description                                           | Best when                              |
+|--------------------|-------------------------------------------------------|----------------------------------------|
+| `npm run deploy`   | Direct deploy to production (no git push required)    | You're in a worktree / want speed      |
+| `npm run deploy:git` | Commit your changes + push to GitHub                | You want clean git history             |
+| `npm run dev`      | Local development server with hot reload              | Daily development                      |
+| `npm run build`    | Production build + Pagefind search indexing           | Testing the final output               |
+| `npm run preview`  | Serve the production build locally                    | Final checks before deploying          |
 
 ## Project Structure (Key Parts)
 

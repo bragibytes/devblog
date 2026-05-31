@@ -159,13 +159,27 @@ After the first successful deploy:
 
 ## Scripts
 
-| Command            | Description                                           | Best when                              |
-|--------------------|-------------------------------------------------------|----------------------------------------|
-| `npm run deploy`   | Direct deploy to production (no git push required)    | You're in a worktree / want speed      |
-| `npm run deploy:git` | Commit your changes + push to GitHub                | You want clean git history             |
-| `npm run dev`      | Local development server with hot reload              | Daily development                      |
-| `npm run build`    | Production build + Pagefind search indexing           | Testing the final output               |
-| `npm run preview`  | Serve the production build locally                    | Final checks before deploying          |
+| Command            | Description                                                        | Best when                                      |
+|--------------------|--------------------------------------------------------------------|------------------------------------------------|
+| `npm run deploy`   | Direct deploy to production (no git push)                          | Urgent fixes (e.g. when Buttondown is ready)   |
+| `npm run deploy:daily` | One consolidated deploy for the whole day's work                | Normal daily rhythm (recommended)              |
+| `npm run deploy:git` | Manual commit + push (for fine-grained control)                 | When you want more control over commits        |
+| `npm run dev`      | Local development server with hot reload                           | Daily development                              |
+| `npm run build`    | Production build + Pagefind search indexing                        | Testing the final output                       |
+| `npm run preview`  | Serve the production build locally                                 | Final checks before deploying                  |
+
+### Deployment Rhythm
+
+To reduce noise on the live site, we follow a **once-per-day deploy** cadence:
+
+- Make changes freely on `npm run dev` throughout the day.
+- Once a day (usually in the evening), run:
+  ```bash
+  npm run deploy:daily
+  ```
+  This creates one clean commit + tag for the whole day's work and pushes it.
+
+**Exception:** When the newsletter (Buttondown) is finally set up, we will do an immediate extra deploy outside the daily rhythm.
 
 ## Project Structure (Key Parts)
 

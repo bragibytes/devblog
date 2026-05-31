@@ -49,6 +49,24 @@ const currentPath = Astro.url.pathname;
       >
         Services
       </a>
+      <a
+        href="/work"
+        class:list={[
+          "hover:text-[var(--accent)] transition-colors",
+          currentPath === '/work' ? "text-[var(--accent)]" : "text-[var(--text-muted)]"
+        ]}
+      >
+        Work
+      </a>
+      <a
+        href="/now"
+        class:list={[
+          "hover:text-[var(--accent)] transition-colors",
+          currentPath === '/now' ? "text-[var(--accent)]" : "text-[var(--text-muted)]"
+        ]}
+      >
+        Now
+      </a>
     </nav>
 
     <div class="flex items-center gap-2">
@@ -114,6 +132,8 @@ const currentPath = Astro.url.pathname;
       <a href="/about" class="py-1">About</a>
       <a href="/arcade" class="py-1">Arcade</a>
       <a href="/services" class="py-1">Services</a>
+      <a href="/work" class="py-1">Work</a>
+      <a href="/now" class="py-1">Now</a>
     </nav>
   </div>
 </header>

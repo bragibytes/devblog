@@ -1,0 +1,62 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import { site } from '@/config';
+---
+
+<BaseLayout 
+  title={`Work — ${site.name}`}
+  description="Examples of the kinds of work we can do by directing AI."
+>
+  <Header />
+
+  <main class="mx-auto max-w-2xl px-6 pt-12 pb-20">
+    <h1 class="text-5xl font-bold tracking-tighter mb-4">Example Engagements</h1>
+    <p class="text-xl text-[var(--text-muted)] mb-10">
+      These are conceptual scenarios illustrating the kinds of problems we help solve.
+      They represent typical businesses and challenges we may work with.
+    </p>
+
+    <div class="space-y-12">
+      <!-- Example 1 -->
+      <div class="border-t border-[var(--border)] pt-8">
+        <h2 class="text-2xl font-bold tracking-tight">Internal Operations Suite</h2>
+        <p class="text-[var(--text-muted)] mt-1">Example: Manufacturing or field services business</p>
+        
+        <div class="prose prose-neutral dark:prose-invert mt-4">
+          <p>
+            A company currently relies on spreadsheets, email, and generic tools for job tracking, quoting, scheduling, and client communication.
+            We would design and build a tailored set of connected tools that match their actual workflows.
+          </p>
+          <p>
+            <strong>Potential impact:</strong> Reduced administrative overhead, faster turnaround on quotes and jobs, and fewer dropped balls between teams.
+          </p>
+        </div>
+      </div>
+
+      <!-- Example 2 -->
+      <div class="border-t border-[var(--border)] pt-8">
+        <h2 class="text-2xl font-bold tracking-tight">Accelerated Feature Development</h2>
+        <p class="text-[var(--text-muted)] mt-1">Example: Growing SaaS or product company</p>
+        
+        <div class="prose prose-neutral dark:prose-invert mt-4">
+          <p>
+            An engineering team has a strong product vision but limited bandwidth to ship complex new features quickly.
+            We would partner with them to handle significant portions of the architecture, implementation, and iteration using AI-directed development.
+          </p>
+          <p>
+            <strong>Potential impact:</strong> Major features delivered faster while maintaining (or improving) code quality and team velocity.
+          </p>
+        </div>
+      </div>
+
+      <div class="text-sm text-[var(--text-muted)] italic border-t border-[var(--border)] pt-8">
+        These are illustrative examples of the kinds of businesses and problems we help with. 
+        Actual client engagements are handled on a case-by-case basis.
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>

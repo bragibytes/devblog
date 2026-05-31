@@ -11,7 +11,8 @@
     "astro": "astro",
     "new-post": "tsx scripts/new-post.ts",
     "deploy": "vercel --prod",
-    "deploy:git": "bash scripts/deploy.sh"
+    "deploy:git": "bash scripts/deploy.sh",
+    "deploy:daily": "bash scripts/daily-deploy.sh"
   },
   "dependencies": {
     "@astrojs/mdx": "^6.0.1",

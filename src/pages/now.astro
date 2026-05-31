@@ -1,0 +1,52 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import { site } from '@/config';
+---
+
+<BaseLayout 
+  title={`Now — ${site.name}`}
+  description="What Sam Bragge is currently focused on."
+>
+  <Header />
+
+  <main class="mx-auto max-w-2xl px-6 pt-12 pb-20">
+    <h1 class="text-5xl font-bold tracking-tighter mb-8">Now</h1>
+
+    <div class="prose prose-neutral dark:prose-invert">
+      <p class="text-xl">
+        Last updated: May 2026
+      </p>
+
+      <h2>Focus Areas</h2>
+      <ul>
+        <li>Deepening AI-directed development workflows on real client projects</li>
+        <li>Documenting what actually works when building production software with models as primary collaborators</li>
+        <li>Exploring the boundary between "directing" and "writing" code</li>
+        <li>Building useful things in the Arcade (currently 2048 + Pong)</li>
+      </ul>
+
+      <h2>Currently Working On</h2>
+      <ul>
+        <li>Refining the services offering and how I communicate it</li>
+        <li>Shipping small, high-quality experiments in public</li>
+        <li>Improving this site (you're seeing the results)</li>
+      </ul>
+
+      <h2>Personal</h2>
+      <p>
+        Living in Connecticut with my cat. Trying to maintain some balance between deep work and actually going outside.
+      </p>
+
+      <h2>What I'm Not Doing</h2>
+      <ul>
+        <li>Chasing every new AI model or tool</li>
+        <li>Building another AI wrapper startup</li>
+        <li>Over-optimizing for virality on social media</li>
+      </ul>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>

@@ -114,26 +114,25 @@ import { site } from '@/config';
         I'll let you know quickly whether it looks like a good fit.
       </p>
 
-      <div class="flex flex-wrap gap-3">
-        <a
-          href={`mailto:${site.author.email}?subject=Services inquiry`}
-          class="inline-flex items-center gap-2 rounded-xl bg-[var(--text)] px-6 py-3 text-base font-medium text-[var(--bg)] transition hover:opacity-90"
-        >
-          Email {site.author.name.split(' ')[0]}
-        </a>
+      <div class="flex flex-col sm:flex-row gap-3">
         <a
           href={`mailto:${site.author.email}?subject=Custom development project`}
-          class="inline-flex items-center gap-2 rounded-xl border border-[var(--border)] px-6 py-3 text-base font-medium transition hover:bg-[var(--bg-elevated)]"
+          class="inline-flex items-center gap-2 rounded-xl bg-[var(--text)] px-6 py-3 text-base font-medium text-[var(--bg)] transition hover:opacity-90"
         >
-          Custom dev inquiry
+          Custom development project
         </a>
         <a
-          href={`mailto:${site.author.email}?subject=SaaS / tools for my business`}
+          href={`mailto:${site.author.email}?subject=SaaS or tools for my business`}
           class="inline-flex items-center gap-2 rounded-xl border border-[var(--border)] px-6 py-3 text-base font-medium transition hover:bg-[var(--bg-elevated)]"
         >
-          Small business tools inquiry
+          SaaS / tools for my business
         </a>
       </div>
+
+      <p class="mt-4 text-sm text-[var(--text-muted)]">
+        Both buttons open your email client with a pre-filled subject. You can also email me directly at 
+        <a href={`mailto:${site.author.email}`} class="underline hover:no-underline">{site.author.email}</a>.
+      </p>
     </div>
   </main>
 

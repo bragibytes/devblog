@@ -1,0 +1,141 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Header from '@/components/Header.astro';
+import Footer from '@/components/Footer.astro';
+import { site } from '@/config';
+---
+
+<BaseLayout 
+  title={`Services — ${site.name}`}
+  description="Custom software development and tailored SaaS tools for small businesses. We build production-grade work by directing AI models and agents — faster and at higher leverage than traditional development."
+>
+  <Header />
+
+  <main class="mx-auto max-w-2xl px-6 pt-12 pb-20">
+    <h1 class="text-5xl font-bold tracking-tighter mb-4">Services</h1>
+    
+    <p class="text-xl text-[var(--text-muted)] mb-10">
+      We build real software by directing AI. This lets us deliver custom applications and operational tools 
+      dramatically faster and with better leverage than traditional development approaches.
+    </p>
+
+    <!-- Custom Development -->
+    <section class="mb-14">
+      <h2 class="text-2xl font-bold tracking-tight mb-4">Custom development</h2>
+      
+      <div class="prose prose-neutral dark:prose-invert mb-6">
+        <p>
+          For founders, teams, and individuals who need production software built.
+          This is the classic freelance / project model, but executed with modern AI leverage.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-3 mb-6">
+        <div class="border border-[var(--border)] rounded-xl p-4">
+          <div class="font-medium mb-1">What we build</div>
+          <ul class="text-sm text-[var(--text-muted)] space-y-1 mt-2">
+            <li>• Custom web apps and internal tools</li>
+            <li>• MVPs and idea validation builds</li>
+            <li>• Significant feature additions to existing products</li>
+            <li>• AI integrations done properly (not just wrappers)</li>
+            <li>• Refactors and modernization of painful legacy code</li>
+          </ul>
+        </div>
+        <div class="border border-[var(--border)] rounded-xl p-4">
+          <div class="font-medium mb-1">Who this is for</div>
+          <p class="text-sm text-[var(--text-muted)] mt-2">
+            Founders who want something real shipped quickly without hiring a full team. 
+            Small teams that need a tool or feature that off-the-shelf software can't provide.
+          </p>
+        </div>
+      </div>
+
+      <p class="text-sm text-[var(--text-muted)]">
+        Engagements range from focused 2–4 week projects to longer ongoing work.
+      </p>
+    </section>
+
+    <!-- SaaS for Small Businesses -->
+    <section class="mb-14 border-t border-[var(--border)] pt-10">
+      <h2 class="text-2xl font-bold tracking-tight mb-4">SaaS &amp; tools for small businesses</h2>
+      
+      <div class="prose prose-neutral dark:prose-invert mb-6">
+        <p>
+          We act as a product engineering partner for small businesses that are tired of 
+          generic software that doesn't fit their actual workflows.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 gap-3 mb-6">
+        <div class="border border-[var(--border)] rounded-xl p-4">
+          <div class="font-medium mb-1">What we build</div>
+          <ul class="text-sm text-[var(--text-muted)] space-y-1 mt-2">
+            <li>• Vertical tools specific to your industry</li>
+            <li>• Internal operations suites (jobs, clients, scheduling, reporting)</li>
+            <li>• Client portals and self-service systems</li>
+            <li>• Custom automation layers on top of tools you already use</li>
+            <li>• Small coordinated suites instead of one bloated system</li>
+          </ul>
+        </div>
+        <div class="border border-[var(--border)] rounded-xl p-4">
+          <div class="font-medium mb-1">Why this matters now</div>
+          <p class="text-sm text-[var(--text-muted)] mt-2">
+            What used to require expensive agencies or years of in-house development can now be 
+            delivered at a fraction of the cost and time — while still being genuinely tailored to you.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- How we work -->
+    <section class="border-t border-[var(--border)] pt-10 mb-12">
+      <h2 class="text-xl font-semibold tracking-tight mb-4">How we work</h2>
+      <div class="prose prose-neutral dark:prose-invert">
+        <p>
+          We keep things lightweight and collaborative. You stay involved in the decisions that matter.
+          We handle architecture, implementation, testing, and deployment at high speed.
+        </p>
+        <p>
+          Most projects start with a short discovery conversation. From there we move quickly into 
+          working software you can actually use and give feedback on.
+        </p>
+        <p class="text-[var(--text-muted)] text-sm">
+          The advantage isn't just speed — it's that we can explore more options and higher-quality 
+          solutions because the cost of iteration is much lower.
+        </p>
+      </div>
+    </section>
+
+    <!-- CTA -->
+    <div class="border-t border-[var(--border)] pt-8">
+      <h2 class="text-lg font-semibold tracking-tight mb-3">Let's talk</h2>
+      <p class="text-[var(--text-muted)] mb-6">
+        Tell me what you're trying to build or what problems you're running into with your current tools.
+        I'll let you know quickly whether it looks like a good fit.
+      </p>
+
+      <div class="flex flex-wrap gap-3">
+        <a
+          href={`mailto:${site.author.email}?subject=Services inquiry`}
+          class="inline-flex items-center gap-2 rounded-xl bg-[var(--text)] px-6 py-3 text-base font-medium text-[var(--bg)] transition hover:opacity-90"
+        >
+          Email {site.author.name.split(' ')[0]}
+        </a>
+        <a
+          href={`mailto:${site.author.email}?subject=Custom development project`}
+          class="inline-flex items-center gap-2 rounded-xl border border-[var(--border)] px-6 py-3 text-base font-medium transition hover:bg-[var(--bg-elevated)]"
+        >
+          Custom dev inquiry
+        </a>
+        <a
+          href={`mailto:${site.author.email}?subject=SaaS / tools for my business`}
+          class="inline-flex items-center gap-2 rounded-xl border border-[var(--border)] px-6 py-3 text-base font-medium transition hover:bg-[var(--bg-elevated)]"
+        >
+          Small business tools inquiry
+        </a>
+      </div>
+    </div>
+  </main>
+
+  <Footer />
+</BaseLayout>

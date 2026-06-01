@@ -25,7 +25,7 @@ export const site = {
     // Buttondown setup (recommended for static sites)
     // 1. Create a free account at https://buttondown.email
     // 2. Replace the value below with your actual Buttondown username
-    buttondown: "your-username",
+    buttondown: "sambragi",
   },
 } as const;
 

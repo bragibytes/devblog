@@ -10,7 +10,7 @@ export function initPong(container: HTMLElement, instructions: HTMLElement): () 
       </div>
     </div>
   `;
-  instructions.textContent = "Mouse or ↑ ↓ keys. First to 11 wins.";
+  instructions.textContent = "Mouse / ↑↓ keys / Drag on mobile • First to 11";
 
   const canvas = container.querySelector('#pong-canvas') as HTMLCanvasElement;
   const ctx = canvas.getContext('2d')!;
@@ -61,6 +61,18 @@ export function initPong(container: HTMLElement, instructions: HTMLElement): () 
   };
   container.addEventListener('mousemove', mouseHandler);
 
+  // Mobile touch support for paddle
+  const touchHandler = (e: TouchEvent) => {
+    e.preventDefault();
+    const r = canvas.getBoundingClientRect();
+    const touch = e.touches[0];
+    if (touch) {
+      my = ((touch.clientY - r.top) / r.height) * 400;
+    }
+  };
+  canvas.addEventListener('touchstart', touchHandler, { passive: false });
+  canvas.addEventListener('touchmove', touchHandler, { passive: false });
+
   startBtn.onclick = () => {
     if (!state.running) {
       state.running = true; state.paused = false;
@@ -82,5 +94,7 @@ export function initPong(container: HTMLElement, instructions: HTMLElement): () 
   return () => {
     state.running = false;
     container.removeEventListener('mousemove', mouseHandler);
+    canvas.removeEventListener('touchstart', touchHandler);
+    canvas.removeEventListener('touchmove', touchHandler);
   };
 }

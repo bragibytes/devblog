@@ -8,44 +8,64 @@ import Footer from '@/components/Footer.astro';
   title="Arcade — Bragibytes"
   description="Fun games you can build with web technologies."
 >
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
   <Header />
 
-  <main class="mx-auto max-w-4xl px-6 py-12">
-    <div class="text-center mb-10">
-      <h1 class="text-5xl font-bold tracking-tighter mb-4">Arcade</h1>
-      <p class="text-xl text-[var(--text-muted)] max-w-2xl mx-auto">
-        A collection of fun, playable games built with web technologies.
-        Proof that you don't need a game engine to make something enjoyable.
-      </p>
-    </div>
+  <main class="mx-auto max-w-5xl px-6 py-12">
+    <!-- Arcade Cabinet -->
+    <div class="arcade-cabinet mx-auto max-w-[980px] bg-[#2a1f14] border-[12px] border-[#3a2a1f] rounded-[18px] shadow-2xl overflow-hidden"
+         style="box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.4), 0 10px 10px -6px rgb(0 0 0 / 0.4), inset 0 0 60px rgba(0,0,0,0.6);">
 
-    <div class="flex flex-col lg:flex-row gap-8">
-      <!-- Game Selector -->
-      <div class="lg:w-64 flex-shrink-0">
-        <h3 class="text-sm font-semibold tracking-[1px] text-[var(--text-muted)] mb-3">SELECT GAME</h3>
-        <div id="game-selector" class="flex flex-col gap-2">
-          <!-- Populated dynamically by JavaScript -->
+      <!-- Marquee -->
+      <div class="bg-black px-8 py-3 flex items-center justify-center border-b-4 border-[#111] relative"
+           style="background: linear-gradient(#111, #000);">
+        <div class="text-[#ff00aa] text-3xl md:text-4xl font-bold tracking-[4px] drop-shadow-[0_0_8px_#ff00aa] arcade-font">
+          ARCADE
         </div>
+        <!-- Neon side accents -->
+        <div class="absolute left-4 top-1/2 -translate-y-1/2 w-3 h-3 bg-[#00f0ff] rounded-full shadow-[0_0_12px_#00f0ff]"></div>
+        <div class="absolute right-4 top-1/2 -translate-y-1/2 w-3 h-3 bg-[#ff00aa] rounded-full shadow-[0_0_12px_#ff00aa]"></div>
       </div>
 
-      <!-- Active Game Area -->
-      <div class="flex-1 min-w-0">
-        <div id="game-area" 
-             class="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-2xl p-4 md:p-6 min-h-[420px] md:min-h-[540px] flex items-center justify-center">
-          <div class="text-center text-[var(--text-muted)]">
-            <p class="text-lg">Choose a game from the left</p>
+      <div class="p-6 md:p-8 bg-[#1a120b]">
+        <div class="flex flex-col lg:flex-row gap-6">
+          <!-- Game Selector (Control Panel) -->
+          <div class="lg:w-56 flex-shrink-0">
+            <div class="mb-3 px-2 text-[#ff00aa] text-xs tracking-[2px] arcade-font">SELECT GAME</div>
+            <div id="game-selector" class="flex flex-col gap-2">
+              <!-- Populated dynamically by JavaScript -->
+            </div>
+          </div>
+
+          <!-- Screen Bezel -->
+          <div class="flex-1 min-w-0">
+            <div class="crt-bezel bg-black p-3 rounded-md border-[6px] border-[#222] shadow-inner"
+                 style="box-shadow: inset 0 0 30px rgba(0,0,0,0.9), 0 0 0 1px #333;">
+              <div id="game-area"
+                   class="bg-[#0a0a0a] border border-[#222] rounded-sm min-h-[420px] md:min-h-[520px] flex items-center justify-center relative overflow-hidden">
+                <div class="text-center text-[#444]">
+                  <p class="text-lg arcade-font">INSERT COIN</p>
+                  <p class="text-xs mt-1 text-[#555]">Choose a game from the left</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Instructions -->
+            <div id="game-instructions"
+                 class="mt-3 text-sm text-[#ffcc66] text-center min-h-[2.5rem] arcade-font tracking-wide">
+              <!-- Instructions for the current game -->
+            </div>
+
+            <div class="mt-1 text-[10px] text-[#664d2e] text-center arcade-font md:hidden">
+              TIP: Landscape mode recommended
+            </div>
           </div>
         </div>
-
-        <div id="game-instructions" class="mt-4 text-sm text-[var(--text-muted)] text-center min-h-[3rem]">
-          <!-- Instructions for the current game -->
-        </div>
       </div>
     </div>
 
-    <div class="text-center text-sm text-[var(--text-muted)]">
-      More games coming soon. Want to suggest one or see how this was built?
-      <a href="https://github.com/bragibytes/devblog" class="underline hover:text-[var(--text)]">Check the source</a>.
+    <div class="text-center text-xs text-[var(--text-muted)] mt-6 opacity-70">
+      Built with web tech • No engines used
     </div>
   </main>
 
@@ -53,13 +73,67 @@ import Footer from '@/components/Footer.astro';
 </BaseLayout>
 
 <style>
+  .arcade-font {
+    font-family: 'Press Start 2P', system-ui, monospace;
+    image-rendering: pixelated;
+  }
+
+  .arcade-cabinet {
+    background: 
+      linear-gradient(#3a2a1f, #2a1f14),
+      repeating-linear-gradient(
+        45deg,
+        rgba(0,0,0,0.15) 0px,
+        rgba(0,0,0,0.15) 2px,
+        transparent 2px,
+        transparent 6px
+      );
+  }
+
+  .crt-bezel {
+    position: relative;
+  }
+  
+  .crt-bezel::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      rgba(255,255,255,0.05) 0px,
+      rgba(255,255,255,0.05) 1px,
+      transparent 1px,
+      transparent 3px
+    );
+    pointer-events: none;
+    border-radius: 2px;
+    z-index: 1;
+  }
+
   #game-area canvas {
     max-width: 100%;
     height: auto;
+    image-rendering: pixelated;
   }
   
   #game-area button {
     min-height: 44px;
+    font-family: 'Press Start 2P', system-ui, monospace;
+    font-size: 11px;
+    letter-spacing: 1px;
+  }
+
+  /* Neon glow helpers */
+  .text-neon-cyan { color: #67e8f9; text-shadow: 0 0 6px #67e8f9, 0 0 12px #67e8f9; }
+  .text-neon-pink { color: #ff00aa; text-shadow: 0 0 6px #ff00aa, 0 0 12px #ff00aa; }
+
+  @media (max-width: 768px) {
+    .arcade-cabinet {
+      border-width: 8px;
+      border-radius: 12px;
+    }
+    #game-area {
+      min-height: 380px !important;
+    }
   }
 </style>
 
@@ -83,9 +157,11 @@ import Footer from '@/components/Footer.astro';
     Object.keys(games).forEach(key => {
       const g = games[key];
       const btn = document.createElement('button');
-      btn.className = `w-full text-left px-4 py-3 rounded-xl border text-sm font-medium transition ${currentGameKey === key ? 'border-[var(--accent)] bg-[var(--bg-elevated)] text-[var(--text)]' : 'border-[var(--border)] hover:bg-[var(--bg)]'}`;
-      const descClass = currentGameKey === key ? 'text-[10px] text-[var(--text)]/80' : 'text-[10px] text-[var(--text-muted)]';
-      btn.innerHTML = `<div class="font-semibold">${g.name}</div><div class="${descClass}">${g.description}</div>`;
+      btn.className = `w-full text-left px-4 py-3 rounded-md border-2 text-sm font-medium transition active:scale-[0.985] ${currentGameKey === key 
+        ? 'border-[#67e8f9] bg-[#1a120b] text-[#67e8f9] shadow-[0_0_0_1px_#67e8f9]' 
+        : 'border-[#664d2e] bg-[#2a1f14] text-[#ffcc99] hover:bg-[#3a2a1f] hover:border-[#8a6640]'}`;
+      const descClass = currentGameKey === key ? 'text-[#ffcc99]/70' : 'text-[#aa8866]';
+      btn.innerHTML = `<div class="font-bold tracking-wider arcade-font text-base">${g.name}</div><div class="text-[10px] ${descClass} mt-0.5">${g.description}</div>`;
       btn.onclick = () => loadGame(key);
       gameSelector.appendChild(btn);
     });

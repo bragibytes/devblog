@@ -13,7 +13,7 @@ export function initSnake(container: HTMLElement, instructions: HTMLElement): ()
       <canvas id="snake-canvas" width="420" height="420" class="border border-[var(--border)] rounded-lg bg-[#0a0a0a] touch-none"></canvas>
     </div>
   `;
-  instructions.textContent = "Arrow keys / WASD • Swipe on mobile. Tap to start.";
+  instructions.textContent = "Arrows/WASD • Swipe or tap screen • Tap to start/pause";
 
   const canvas = container.querySelector('#snake-canvas') as HTMLCanvasElement;
   const ctx = canvas.getContext('2d')!;

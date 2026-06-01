@@ -9,7 +9,7 @@ export function init2048(container: HTMLElement, instructions: HTMLElement): () 
       <div id="b" style="width:420px;height:420px;background:#1a1a1a;border:1px solid #333;border-radius:8px;padding:12px;position:relative"></div>
     </div>
   `;
-  instructions.textContent = "Arrow keys / WASD";
+  instructions.textContent = "Arrows / WASD / Swipe • Tap New to restart";
 
   const b = container.querySelector('#b') as HTMLElement;
   const sEl = container.querySelector('#s') as HTMLElement;
@@ -80,6 +80,29 @@ export function init2048(container: HTMLElement, instructions: HTMLElement): () 
   };
   document.addEventListener('keydown', keyHandler);
 
+  // Mobile swipe support
+  let touchStartX = 0, touchStartY = 0;
+  const touchStart = (e: TouchEvent) => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  };
+  const touchEnd = (e: TouchEvent) => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dx) > Math.abs(dy)) {
+      if (dx > 30) mv('right');
+      else if (dx < -30) mv('left');
+    } else {
+      if (dy > 30) mv('down');
+      else if (dy < -30) mv('up');
+    }
+  };
+  const b = container.querySelector('#b') as HTMLElement;
+  if (b) {
+    b.addEventListener('touchstart', touchStart, { passive: true });
+    b.addEventListener('touchend', touchEnd, { passive: true });
+  }
+
   nBtn.onclick = () => {
     g = Array(4).fill(null).map(() => Array(4).fill(0));
     sc = 0; add(); add(); rdr();
@@ -89,5 +112,9 @@ export function init2048(container: HTMLElement, instructions: HTMLElement): () 
 
   return () => {
     document.removeEventListener('keydown', keyHandler);
+    if (b) {
+      b.removeEventListener('touchstart', touchStart);
+      b.removeEventListener('touchend', touchEnd);
+    }
   };
 }

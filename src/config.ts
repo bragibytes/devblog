@@ -19,7 +19,7 @@ export const site = {
     // linkedin, mastodon, etc. can be added here
   },
   repo: "https://github.com/bragibytes/devblog", // Update to your actual repo
-  defaultOgImage: "/og/default.png", // We'll create a simple one or use dynamic later
+  defaultOgImage: "/og/default.png",
 
   newsletter: {
     // Buttondown setup (recommended for static sites)

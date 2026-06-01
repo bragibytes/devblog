@@ -3,9 +3,10 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import sitemap from '@astrojs/sitemap';
 import tailwind from '@tailwindcss/vite';
+import vercel from '@astrojs/vercel';
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://bragge.dev',
+  site: 'https://bragibytes.com',
 
   integrations: [
     mdx({
@@ -25,6 +26,9 @@ export default defineConfig({
       lastmod: new Date(),
     }),
   ],
+
+  output: 'static',
+  adapter: vercel(),
 
   vite: {
     plugins: [tailwind()],

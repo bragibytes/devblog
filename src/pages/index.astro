@@ -6,6 +6,7 @@ import Footer from '@/components/Footer.astro';
 import Newsletter from '@/components/Newsletter.astro';
 import PostCard from '@/components/PostCard.astro';
 import { site } from '@/config';
+import { recentUpdates } from '@/data/recent-updates';
 
 const allPosts = await getCollection('blog', ({ data }) => {
   return import.meta.env.PROD ? data.draft !== true : true;
@@ -101,14 +102,18 @@ const featuredPost = sortedPosts[0];
         </div>
 
         <div class="space-y-4 text-sm">
-          <div class="flex gap-4">
-            <div class="text-[var(--text-muted)] w-20 shrink-0">Jun 2</div>
-            <div>Moved newsletter signup to homepage only.</div>
-          </div>
-          <div class="flex gap-4">
-            <div class="text-[var(--text-muted)] w-20 shrink-0">Jun 1</div>
-            <div>Activated the Buttondown newsletter (finally).</div>
-          </div>
+          {recentUpdates.map((update) => (
+            <div class="flex gap-4">
+              <div class="text-[var(--text-muted)] w-20 shrink-0">{update.date}</div>
+              <div>
+                {update.link ? (
+                  <a href={update.link} class="hover:text-[var(--accent)] underline">{update.text}</a>
+                ) : (
+                  update.text
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
     </section>

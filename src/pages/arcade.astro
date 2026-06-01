@@ -6,7 +6,7 @@ import Footer from '@/components/Footer.astro';
 
 <BaseLayout
   title="Arcade — Bragibytes"
-  description="Fun games you can build with web technologies. Starting with classic Pong."
+  description="Fun games you can build with web technologies."
 >
   <Header />
 
@@ -26,14 +26,12 @@ import Footer from '@/components/Footer.astro';
         <div id="game-selector" class="flex flex-col gap-2">
           <!-- Populated dynamically by JavaScript -->
         </div>
-
       </div>
 
       <!-- Active Game Area -->
       <div class="flex-1 min-w-0">
         <div id="game-area" 
-             class="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-2xl p-6 min-h-[540px] flex items-center justify-center">
-          <!-- Selected game renders its UI here -->
+             class="bg-[var(--bg-elevated)] border border-[var(--border)] rounded-2xl p-4 md:p-6 min-h-[420px] md:min-h-[540px] flex items-center justify-center">
           <div class="text-center text-[var(--text-muted)]">
             <p class="text-lg">Choose a game from the left</p>
           </div>
@@ -54,8 +52,19 @@ import Footer from '@/components/Footer.astro';
   <Footer />
 </BaseLayout>
 
+<style>
+  #game-area canvas {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  #game-area button {
+    min-height: 44px;
+  }
+</style>
+
 <script>
-  // === Clean Arcade Game System ===
+  // === Arcade with proper code splitting ===
   const gameArea = document.getElementById('game-area');
   const gameInstructions = document.getElementById('game-instructions');
   const gameSelector = document.getElementById('game-selector');
@@ -82,357 +91,41 @@ import Footer from '@/components/Footer.astro';
     });
   }
 
-  function loadGame(key) {
+  async function loadGame(key) {
     currentGameKey = key;
-    renderSelector(); // highlight immediately
+    renderSelector();
 
     if (currentCleanup) currentCleanup();
     gameArea.innerHTML = '';
     gameInstructions.innerHTML = '';
 
-    if (key === 'pong') currentCleanup = initPong(gameArea, gameInstructions);
-    if (key === '2048') currentCleanup = init2048(gameArea, gameInstructions);
-    if (key === 'snake') currentCleanup = initSnake(gameArea, gameInstructions);
+    try {
+      if (key === 'pong') {
+        const mod = await import('../scripts/games/pong.ts');
+        currentCleanup = mod.initPong(gameArea, gameInstructions);
+      }
+      if (key === '2048') {
+        const mod = await import('../scripts/games/2048.ts');
+        currentCleanup = mod.init2048(gameArea, gameInstructions);
+      }
+      if (key === 'snake') {
+        const mod = await import('../scripts/games/snake.ts');
+        currentCleanup = mod.initSnake(gameArea, gameInstructions);
+      }
+    } catch (err) {
+      console.error('Failed to load game:', err);
+      gameArea.innerHTML = `<div class="text-center text-red-400">Failed to load game. Please refresh.</div>`;
+    }
   }
 
-  // Prevent arrow keys from scrolling the page while a game is selected
+  // Prevent arrow keys + touch scroll on active game
   document.addEventListener('keydown', (e) => {
-    if (currentGameKey && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
-      e.preventDefault();
-    }
+    if (currentGameKey && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) e.preventDefault();
   }, { passive: false });
 
-  // PONG
-  function initPong(container, instructions) {
-    container.innerHTML = `
-      <div class="w-full max-w-[640px]">
-        <canvas id="pong-canvas" width="640" height="400" class="border border-[var(--border)] rounded-lg bg-black cursor-crosshair w-full"></canvas>
-        <div class="flex gap-3 justify-center mt-4">
-          <button id="p-start" class="px-6 py-2 bg-[var(--accent)] text-black rounded-lg font-medium text-sm">Start</button>
-          <button id="p-pause" class="px-6 py-2 border border-[var(--border)] rounded-lg text-sm" disabled>Pause</button>
-          <button id="p-reset" class="px-6 py-2 border border-[var(--border)] rounded-lg text-sm">Reset</button>
-        </div>
-      </div>
-    `;
-    instructions.textContent = "Mouse or ↑ ↓ keys. First to 11 wins.";
-
-    const canvas = container.querySelector('#pong-canvas');
-    const ctx = canvas.getContext('2d');
-    const startBtn = container.querySelector('#p-start');
-    const pauseBtn = container.querySelector('#p-pause');
-    const resetBtn = container.querySelector('#p-reset');
-
-    // Minimal working Pong (full version can be expanded later)
-    let state = { running: false, paused: false, ps: 0, as: 0 };
-    let ball = { x: 320, y: 200, vx: 4, vy: 3 };
-    let py = 160, ay = 160, my = 200;
-
-    function resetB() { ball.x=320; ball.y=200; ball.vx = (Math.random()>0.5?1:-1)*3.5; ball.vy = Math.random()*4-2; }
-    function draw() {
-      ctx.fillStyle='#0a0a0a'; ctx.fillRect(0,0,640,400);
-      ctx.fillStyle='#34d399'; ctx.fillRect(0,py,10,80); ctx.fillRect(630,ay,10,80);
-      ctx.fillStyle='#fff'; ctx.fillRect(ball.x, ball.y, 8, 8);
-      ctx.fillStyle='#e2e8f0'; ctx.font='bold 42px monospace'; ctx.textAlign='center';
-      ctx.fillText(state.ps, 160, 60); ctx.fillText(state.as, 480, 60);
-    }
-    function update() {
-      if (!state.running || state.paused) return;
-      const t = my - 40; py += (t-py)*0.2; py = Math.max(0, Math.min(320, py));
-      const ac = ay + 40; const sp = 3.6 + (state.ps+state.as)*0.06;
-      if (ball.y < ac-8) ay -= sp; else if (ball.y > ac+8) ay += sp; ay = Math.max(0, Math.min(320, ay));
-      ball.x += ball.vx; ball.y += ball.vy;
-      if (ball.y<=0 || ball.y>=400) ball.vy = -ball.vy;
-      if (ball.x <= 12 && ball.y >= py && ball.y <= py+80) { ball.vx = Math.abs(ball.vx)*1.05; ball.vy += (ball.y-(py+40))*0.1; }
-      if (ball.x >= 628 && ball.y >= ay && ball.y <= ay+80) { ball.vx = -Math.abs(ball.vx)*1.05; ball.vy += (ball.y-(ay+40))*0.1; }
-      if (ball.x < 0) { state.as++; resetB(); } 
-      if (ball.x > 640) { state.ps++; resetB(); }
-      if (state.ps >= 11 || state.as >= 11) state.running = false;
-    }
-    function loop() { update(); draw(); if (state.running && !state.paused) requestAnimationFrame(loop); }
-
-    container.addEventListener('mousemove', e => {
-      const r = canvas.getBoundingClientRect();
-      my = ((e.clientY - r.top) / r.height) * 400;
-    });
-
-    startBtn.onclick = () => { if (!state.running) { state.running=true; state.paused=false; if (state.ps>=11||state.as>=11){state.ps=0;state.as=0;resetB();} startBtn.textContent='Resume'; pauseBtn.disabled=false; loop(); } else { state.paused = !state.paused; } };
-    pauseBtn.onclick = () => { state.paused = !state.paused; };
-    resetBtn.onclick = () => { state.running=false; state.paused=false; state.ps=0; state.as=0; resetB(); startBtn.textContent='Start'; pauseBtn.disabled=true; draw(); };
-    canvas.onclick = () => { if (!state.running) { state.running=true; loop(); } };
-
-    resetB(); draw();
-    return () => { state.running = false; };
-  }
-
-  // 2048 (compact)
-  function init2048(container, instructions) {
-    container.innerHTML = `
-      <div style="width:420px">
-        <div class="flex justify-between mb-3 text-sm">
-          <div>Score: <span id="s">0</span></div>
-          <button id="n" class="px-4 py-1 bg-[var(--accent)] text-black rounded text-sm">New</button>
-        </div>
-        <div id="b" style="width:420px;height:420px;background:#1a1a1a;border:1px solid #333;border-radius:8px;padding:12px;position:relative"></div>
-      </div>
-    `;
-    instructions.textContent = "Arrow keys / WASD";
-
-    const b = container.querySelector('#b');
-    const sEl = container.querySelector('#s');
-    const nBtn = container.querySelector('#n');
-    let g = Array(4).fill().map(()=>Array(4).fill(0)); let sc=0;
-
-    function add(){ const e=[]; for(let r=0;r<4;r++)for(let c=0;c<4;c++) if(!g[r][c]) e.push([r,c]); if(e.length){ const [r,c]=e[Math.floor(Math.random()*e.length)]; g[r][c]=Math.random()<0.9?2:4; } }
-    function rdr(){ b.innerHTML=''; for(let r=0;r<4;r++)for(let c=0;c<4;c++){ const d=document.createElement('div'); d.style.cssText=`position:absolute;width:90px;height:90px;left:${c*102+12}px;top:${r*102+12}px;background:#27272a;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:700;color:white;`; if(g[r][c]){d.textContent=g[r][c]; d.style.background = g[r][c]>=512?'#3b82f6':'#52525b';} b.appendChild(d); } sEl.textContent=sc; }
-    function slide(r){ let a=r.filter(x=>x); for(let i=0;i<a.length-1;i++) if(a[i]===a[i+1]){a[i]*=2; sc+=a[i]; a[i+1]=0;} a=a.filter(x=>x); while(a.length<4)a.push(0); return a; }
-    function mv(d){ 
-      const o=JSON.stringify(g); 
-      if(d==='left') g = g.map(slide);
-      if(d==='right') g = g.map(r => slide([...r].reverse()).reverse());
-      if(d==='up') {
-        for(let c=0; c<4; c++) {
-          let col = g.map(row => row[c]);
-          col = slide(col);
-          g.forEach((row, r) => row[c] = col[r]);
-        }
-      }
-      if(d==='down') {
-        for(let c=0; c<4; c++) {
-          let col = g.map(row => row[c]);
-          col = slide([...col].reverse()).reverse();
-          g.forEach((row, r) => row[c] = col[r]);
-        }
-      }
-      if(JSON.stringify(g)!==o){ add(); rdr(); } 
-    }
-
-    document.addEventListener('keydown', e => {
-      if (['ArrowLeft','a','A'].includes(e.key)) mv('left');
-      if (['ArrowRight','d','D'].includes(e.key)) mv('right');
-      if (['ArrowUp','w','W'].includes(e.key)) mv('up');
-      if (['ArrowDown','s','S'].includes(e.key)) mv('down');
-    });
-
-    nBtn.onclick = ()=>{ g=Array(4).fill().map(()=>Array(4).fill(0)); sc=0; add();add(); rdr(); };
-    add(); add(); rdr();
-    return ()=>{};
-  }
-
-  // SNAKE
-  function initSnake(container, instructions) {
-    container.innerHTML = `
-      <div class="flex flex-col items-center">
-        <div class="flex justify-between w-[420px] mb-3 text-sm">
-          <div>Score: <span id="snake-score">0</span></div>
-          <div class="flex gap-2">
-            <button id="snake-start" class="px-4 py-1 bg-[var(--accent)] text-black rounded text-sm">Start</button>
-            <button id="snake-pause" class="px-4 py-1 border border-[var(--border)] rounded text-sm" disabled>Pause</button>
-            <button id="snake-reset" class="px-4 py-1 border border-[var(--border)] rounded text-sm">Reset</button>
-          </div>
-        </div>
-        <canvas id="snake-canvas" width="420" height="420" class="border border-[var(--border)] rounded-lg bg-[#0a0a0a] touch-none"></canvas>
-      </div>
-    `;
-    instructions.textContent = "Arrow keys / WASD • Swipe on mobile";
-
-    const canvas = container.querySelector('#snake-canvas');
-    const ctx = canvas.getContext('2d');
-    const scoreEl = container.querySelector('#snake-score');
-    const startBtn = container.querySelector('#snake-start');
-    const pauseBtn = container.querySelector('#snake-pause');
-    const resetBtn = container.querySelector('#snake-reset');
-
-    const GRID = 21;
-    const CELL = 20;
-    let snake = [{x: 10, y: 10}];
-    let dir = {x: 1, y: 0};
-    let food = {x: 15, y: 10};
-    let score = 0;
-    let running = false;
-    let paused = false;
-    let loopId = null;
-
-    function placeFood() {
-      do {
-        food = { x: Math.floor(Math.random()*GRID), y: Math.floor(Math.random()*GRID) };
-      } while (snake.some(s => s.x === food.x && s.y === food.y));
-    }
-
-    function draw() {
-      ctx.fillStyle = '#111';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-      // Grid lines (subtle)
-      ctx.strokeStyle = '#222';
-      for (let i = 0; i <= GRID; i++) {
-        ctx.beginPath();
-        ctx.moveTo(i * CELL, 0);
-        ctx.lineTo(i * CELL, canvas.height);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(0, i * CELL);
-        ctx.lineTo(canvas.width, i * CELL);
-        ctx.stroke();
-      }
-
-      // Food
-      ctx.fillStyle = '#f43f5e';
-      ctx.fillRect(food.x * CELL + 2, food.y * CELL + 2, CELL - 4, CELL - 4);
-
-      // Snake
-      ctx.fillStyle = '#67e8f9';
-      snake.forEach((seg, i) => {
-        ctx.fillRect(seg.x * CELL + 1, seg.y * CELL + 1, CELL - 2, CELL - 2);
-        if (i === 0) {
-          ctx.fillStyle = '#0e7490';
-          ctx.fillRect(seg.x * CELL + 5, seg.y * CELL + 5, 6, 6);
-          ctx.fillStyle = '#67e8f9';
-        }
-      });
-    }
-
-    function update() {
-      if (!running || paused) return;
-
-      const head = { ...snake[0] };
-      head.x += dir.x;
-      head.y += dir.y;
-
-      // Wall collision
-      if (head.x < 0 || head.x >= GRID || head.y < 0 || head.y >= GRID) {
-        gameOver();
-        return;
-      }
-
-      // Self collision
-      if (snake.some((s, i) => i > 0 && s.x === head.x && s.y === head.y)) {
-        gameOver();
-        return;
-      }
-
-      snake.unshift(head);
-
-      // Eat food
-      if (head.x === food.x && head.y === food.y) {
-        score += 10;
-        scoreEl.textContent = score;
-        placeFood();
-      } else {
-        snake.pop();
-      }
-    }
-
-    function gameLoop() {
-      if (!running || paused) return;
-      update();
-      draw();
-      loopId = setTimeout(gameLoop, 140);
-    }
-
-    function gameOver() {
-      running = false;
-      clearTimeout(loopId);
-      ctx.fillStyle = 'rgba(0,0,0,0.7)';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 28px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('Game Over', canvas.width/2, canvas.height/2 - 10);
-      ctx.font = '16px sans-serif';
-      ctx.fillText(`Score: ${score}`, canvas.width/2, canvas.height/2 + 20);
-      startBtn.textContent = 'Restart';
-      pauseBtn.disabled = true;
-    }
-
-    function reset() {
-      clearTimeout(loopId);
-      snake = [{x: 10, y: 10}];
-      dir = {x: 1, y: 0};
-      score = 0;
-      scoreEl.textContent = '0';
-      placeFood();
-      running = false;
-      paused = false;
-      startBtn.textContent = 'Start';
-      pauseBtn.disabled = true;
-      draw();
-    }
-
-    function changeDirection(newDir) {
-      if (newDir.x === -dir.x && newDir.y === -dir.y) return; // prevent 180
-      dir = newDir;
-    }
-
-    // Keyboard
-    function handleKey(e) {
-      if (!running || paused) return;
-      if (['ArrowUp', 'w', 'W'].includes(e.key)) changeDirection({x: 0, y: -1});
-      if (['ArrowDown', 's', 'S'].includes(e.key)) changeDirection({x: 0, y: 1});
-      if (['ArrowLeft', 'a', 'A'].includes(e.key)) changeDirection({x: -1, y: 0});
-      if (['ArrowRight', 'd', 'D'].includes(e.key)) changeDirection({x: 1, y: 0});
-    }
-    document.addEventListener('keydown', handleKey);
-
-    // Touch swipe
-    let touchStartX = 0, touchStartY = 0;
-    canvas.addEventListener('touchstart', (e) => {
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-    }, { passive: true });
-
-    canvas.addEventListener('touchend', (e) => {
-      if (!running || paused) return;
-      const dx = e.changedTouches[0].clientX - touchStartX;
-      const dy = e.changedTouches[0].clientY - touchStartY;
-      if (Math.abs(dx) > Math.abs(dy)) {
-        if (dx > 30) changeDirection({x: 1, y: 0});
-        else if (dx < -30) changeDirection({x: -1, y: 0});
-      } else {
-        if (dy > 30) changeDirection({x: 0, y: 1});
-        else if (dy < -30) changeDirection({x: 0, y: -1});
-      }
-    }, { passive: true });
-
-    // Buttons
-    startBtn.onclick = () => {
-      if (!running) {
-        running = true;
-        paused = false;
-        if (snake.length === 1 && score === 0) { /* fresh start */ }
-        startBtn.textContent = 'Resume';
-        pauseBtn.disabled = false;
-        gameLoop();
-      } else {
-        paused = !paused;
-        if (!paused) gameLoop();
-      }
-    };
-
-    pauseBtn.onclick = () => {
-      paused = !paused;
-      if (!paused) gameLoop();
-    };
-
-    resetBtn.onclick = reset;
-
-    // Click to start
-    canvas.onclick = () => {
-      if (!running) {
-        running = true;
-        gameLoop();
-        startBtn.textContent = 'Resume';
-        pauseBtn.disabled = false;
-      }
-    };
-
-    // Initial draw
-    reset();
-    draw();
-
-    return () => {
-      clearTimeout(loopId);
-      document.removeEventListener('keydown', handleKey);
-    };
+  const gameAreaEl = document.getElementById('game-area');
+  if (gameAreaEl) {
+    gameAreaEl.addEventListener('touchmove', (e) => { if (currentGameKey) e.preventDefault(); }, { passive: false });
   }
 
   function boot() {

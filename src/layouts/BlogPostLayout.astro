@@ -12,9 +12,10 @@ interface Props {
   prevPost?: CollectionEntry<'blog'> | null;
   nextPost?: CollectionEntry<'blog'> | null;
   relatedPosts?: CollectionEntry<'blog'>[];
+  image?: string;
 }
 
-const { post, headings = [], prevPost = null, nextPost = null, relatedPosts = [] } = Astro.props;
+const { post, headings = [], prevPost = null, nextPost = null, relatedPosts = [], image } = Astro.props;
 const { title, description, pubDate, updatedDate, tags } = post.data;
 
 const formattedDate = pubDate.toLocaleDateString('en-US', {
@@ -32,6 +33,7 @@ const readingTime = Math.max(1, Math.round((post.body?.length || 0) / 900)); // 
   type="article"
   publishedTime={pubDate.toISOString()}
   tags={tags}
+  image={image}
 >
   <Header />
 
@@ -67,6 +69,17 @@ const readingTime = Math.max(1, Math.round((post.body?.length || 0) / 900)); // 
             <span>Updated {updatedDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</span>
           </>
         )}
+        <span aria-hidden="true">·</span>
+        <button 
+          id="copy-link-btn"
+          class="inline-flex items-center gap-1.5 hover:text-[var(--text)] transition-colors"
+          aria-label="Copy link to this post"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
+          </svg>
+          <span id="copy-link-text">Copy link</span>
+        </button>
       </div>
 
       <!-- Tags -->
@@ -208,10 +221,48 @@ const readingTime = Math.max(1, Math.round((post.body?.length || 0) / 900)); // 
       });
     }
 
+    // Copy link button
+    function setupCopyLink() {
+      const btn = document.getElementById('copy-link-btn');
+      const text = document.getElementById('copy-link-text');
+
+      if (!btn || !text) return;
+
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(window.location.href);
+          const originalText = text.textContent;
+          text.textContent = 'Copied!';
+
+          setTimeout(() => {
+            text.textContent = originalText;
+          }, 1800);
+        } catch (err) {
+          // Fallback for older browsers
+          const input = document.createElement('input');
+          input.value = window.location.href;
+          document.body.appendChild(input);
+          input.select();
+          document.execCommand('copy');
+          document.body.removeChild(input);
+
+          const originalText = text.textContent;
+          text.textContent = 'Copied!';
+          setTimeout(() => {
+            text.textContent = originalText;
+          }, 1800);
+        }
+      });
+    }
+
     if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', addCopyButtons);
+      document.addEventListener('DOMContentLoaded', () => {
+        addCopyButtons();
+        setupCopyLink();
+      });
     } else {
       addCopyButtons();
+      setupCopyLink();
     }
   </script>
 </BaseLayout>

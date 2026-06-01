@@ -23,7 +23,7 @@ export const getStaticPaths = (async () => {
 const { post, prevPost, nextPost } = Astro.props;
 const { Content, headings } = await render(post);
 
-const ogImage = `/og/${post.id}.png?title=${encodeURIComponent(post.data.title)}`;
+const ogImage = `/og/${post.id}.png`;
 
 // Simple related posts: posts that share at least one tag (excluding current post)
 const allPosts = await getCollection('blog', ({ data }) => {

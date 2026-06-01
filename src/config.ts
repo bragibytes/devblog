@@ -10,7 +10,7 @@ export const site = {
   url: "https://bragibytes.com",
   author: {
     name: "Sam Bragge",
-    email: "rustycoder42@gmail.com",
+    email: "sam@bragibytes.com",
     github: "bragibytes",
   },
   social: {

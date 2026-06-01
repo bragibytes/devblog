@@ -92,6 +92,27 @@ const featuredPost = sortedPosts[0];
       </div>
     </section>
 
+    <!-- Recent updates -->
+    <section class="border-t border-[var(--border)] py-12">
+      <div class="mx-auto max-w-2xl px-6">
+        <div class="flex items-baseline justify-between mb-6">
+          <h2 class="text-sm font-semibold tracking-[1px] text-[var(--text-muted)]">RECENT UPDATES</h2>
+          <a href="/blog" class="text-sm text-[var(--accent)] hover:underline">All writing →</a>
+        </div>
+
+        <div class="space-y-4 text-sm">
+          <div class="flex gap-4">
+            <div class="text-[var(--text-muted)] w-20 shrink-0">Jun 2</div>
+            <div>Moved newsletter signup to homepage only.</div>
+          </div>
+          <div class="flex gap-4">
+            <div class="text-[var(--text-muted)] w-20 shrink-0">Jun 1</div>
+            <div>Activated the Buttondown newsletter (finally).</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <Newsletter />
   </main>
 

@@ -8,16 +8,44 @@ export const getStaticPaths = (async () => {
     return import.meta.env.PROD ? data.draft !== true : true;
   });
 
-  return posts.map((post) => ({
+  const sorted = posts.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
+
+  return sorted.map((post, index) => ({
     params: { slug: post.id },
-    props: { post },
+    props: {
+      post,
+      prevPost: sorted[index + 1] || null,
+      nextPost: sorted[index - 1] || null,
+    },
   }));
 }) satisfies GetStaticPaths;
 
-const { post } = Astro.props;
+const { post, prevPost, nextPost } = Astro.props;
 const { Content, headings } = await render(post);
+
+// Simple related posts: posts that share at least one tag (excluding current post)
+const allPosts = await getCollection('blog', ({ data }) => {
+  return import.meta.env.PROD ? data.draft !== true : true;
+});
+
+const relatedPosts = allPosts
+  .filter((p) => p.id !== post.id)
+  .map((p) => ({
+    post: p,
+    sharedTags: p.data.tags.filter((tag) => post.data.tags.includes(tag)).length,
+  }))
+  .filter((item) => item.sharedTags > 0)
+  .sort((a, b) => b.sharedTags - a.sharedTags)
+  .slice(0, 3)
+  .map((item) => item.post);
 ---
 
-<BlogPostLayout post={post} headings={headings}>
+<BlogPostLayout 
+  post={post} 
+  headings={headings} 
+  prevPost={prevPost} 
+  nextPost={nextPost}
+  relatedPosts={relatedPosts}
+>
   <Content />
 </BlogPostLayout>

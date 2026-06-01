@@ -3,6 +3,7 @@ import { getCollection } from 'astro:content';
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Header from '@/components/Header.astro';
 import Footer from '@/components/Footer.astro';
+import Newsletter from '@/components/Newsletter.astro';
 import PostCard from '@/components/PostCard.astro';
 import { site } from '@/config';
 
@@ -90,6 +91,8 @@ const featuredPost = sortedPosts[0];
         <a href="/now" class="text-sm text-[var(--accent)] hover:underline mt-2 inline-block">What I'm focused on right now →</a>
       </div>
     </section>
+
+    <Newsletter />
   </main>
 
   <Footer />

@@ -6,7 +6,6 @@ import Footer from '@/components/Footer.astro';
 import Newsletter from '@/components/Newsletter.astro';
 import PostCard from '@/components/PostCard.astro';
 import { site } from '@/config';
-import { recentUpdates } from '@/data/recent-updates';
 
 const allPosts = await getCollection('blog', ({ data }) => {
   return import.meta.env.PROD ? data.draft !== true : true;
@@ -94,31 +93,6 @@ const featuredPost = sortedPosts[0];
           Notes on building real software by directing AI. The workflows, failures, and leverage that actually matter.
         </p>
         <a href="/now" class="text-sm text-[var(--accent)] hover:underline mt-2 inline-block">What I'm focused on right now →</a>
-      </div>
-    </section>
-
-    <!-- Recent updates -->
-    <section class="border-t border-[var(--border)] py-12">
-      <div class="mx-auto max-w-2xl px-6">
-        <div class="flex items-baseline justify-between mb-6">
-          <h2 class="text-sm font-semibold tracking-[1px] text-[var(--text-muted)]">RECENT UPDATES</h2>
-          <a href="/blog" class="text-sm text-[var(--accent)] hover:underline">All writing →</a>
-        </div>
-
-        <div class="space-y-4 text-sm">
-          {recentUpdates.map((update) => (
-            <div class="flex gap-4">
-              <div class="text-[var(--text-muted)] w-20 shrink-0">{update.date}</div>
-              <div>
-                {update.link ? (
-                  <a href={update.link} class="hover:text-[var(--accent)] underline">{update.text}</a>
-                ) : (
-                  update.text
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
       </div>
     </section>
 

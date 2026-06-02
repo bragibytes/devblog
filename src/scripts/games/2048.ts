@@ -11,7 +11,7 @@ export function init2048(container: HTMLElement, instructions: HTMLElement): () 
   `;
   instructions.textContent = "Arrows / WASD / Swipe • Tap New to restart";
 
-  const b = container.querySelector('#b') as HTMLElement;
+  const boardEl = container.querySelector('#b') as HTMLElement;
   const sEl = container.querySelector('#s') as HTMLElement;
   const nBtn = container.querySelector('#n') as HTMLButtonElement;
 
@@ -28,7 +28,7 @@ export function init2048(container: HTMLElement, instructions: HTMLElement): () 
   }
 
   function rdr() {
-    b.innerHTML = '';
+    boardEl.innerHTML = '';
     for (let r = 0; r < 4; r++) {
       for (let c = 0; c < 4; c++) {
         const d = document.createElement('div');
@@ -37,7 +37,7 @@ export function init2048(container: HTMLElement, instructions: HTMLElement): () 
           d.textContent = g[r][c].toString();
           d.style.background = g[r][c] >= 512 ? '#3b82f6' : '#52525b';
         }
-        b.appendChild(d);
+        boardEl.appendChild(d);
       }
     }
     sEl.textContent = sc.toString();
@@ -97,10 +97,9 @@ export function init2048(container: HTMLElement, instructions: HTMLElement): () 
       else if (dy < -30) mv('up');
     }
   };
-  const b = container.querySelector('#b') as HTMLElement;
-  if (b) {
-    b.addEventListener('touchstart', touchStart, { passive: true });
-    b.addEventListener('touchend', touchEnd, { passive: true });
+  if (boardEl) {
+    boardEl.addEventListener('touchstart', touchStart, { passive: true });
+    boardEl.addEventListener('touchend', touchEnd, { passive: true });
   }
 
   nBtn.onclick = () => {
@@ -112,9 +111,9 @@ export function init2048(container: HTMLElement, instructions: HTMLElement): () 
 
   return () => {
     document.removeEventListener('keydown', keyHandler);
-    if (b) {
-      b.removeEventListener('touchstart', touchStart);
-      b.removeEventListener('touchend', touchEnd);
+    if (boardEl) {
+      boardEl.removeEventListener('touchstart', touchStart);
+      boardEl.removeEventListener('touchend', touchEnd);
     }
   };
 }

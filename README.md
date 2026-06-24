@@ -1,6 +1,6 @@
 # Bragibytes
 
-A personal blog about building software by directing AI models and agents.
+A personal blog and portfolio about building software by directing AI models and agents.
 
 **Live site**: [bragibytes.com](https://bragibytes.com)
 
@@ -14,6 +14,11 @@ A personal blog about building software by directing AI models and agents.
 - TypeScript
 
 The site is deliberately small and lightweight.
+
+## Featured Projects
+
+- **Celio's Forge** — A virtual tabletop for Dungeons & Dragons 5th Edition  
+  [https://celiosforge.fly.dev](https://celiosforge.fly.dev)
 
 ## Local Development
 

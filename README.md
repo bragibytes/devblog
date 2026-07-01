@@ -18,7 +18,7 @@ The site is deliberately small and lightweight.
 ## Featured Projects
 
 - **Celio's Forge** — A virtual tabletop for Dungeons & Dragons 5th Edition  
-  [https://celiosforge.fly.dev](https://celiosforge.fly.dev)
+  [https://celiosforge.com](https://celiosforge.com)
 
 ## Local Development
 
